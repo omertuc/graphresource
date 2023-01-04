@@ -12,28 +12,30 @@ echo 'function data() { return (' > $SCRIPT_DIR/data.js
 now=$(jq -n 'now | todateiso8601' -r)
 
 cat $SCRIPT_DIR/audit/*audit* | jq --arg now "$now" -r --slurp '
-. as $root |
-[
-    ["pods", "deployments", "secrets", "configmaps"][]
-    | . as $type
+. as $root 
+| ([.[].objectRef.namespace] | unique) as $namespaces
+| [
+    $namespaces[]
+    | . as $namespace
     | {
-        "group": $type,
+        "group": $namespace,
         "data": [
-            $root[] 
+            $root[]
             | select(
                 .verb == "create"
-                and .objectRef.resource == $type
+                and (.objectRef.resource | test("(pods|deployments|secrets|configmaps)"))
+                and (.objectRef.namespace == $namespace)
                 and .responseStatus.code == 201
                 and .objectRef.resource != "subjectaccessreviews"
                 and .objectRef.resource != "tokenreviews"
                 and .objectRef.name != null
             ) 
             | {
-                "label": "\(.objectRef.namespace)/\(.objectRef.name)",
+                "label": "\(.objectRef.name) - \(.objectRef.resource)",
                 "data": [
                     {
                         "timeRange": [ .requestReceivedTimestamp, $now ],
-                        "val": .objectRef.namespace
+                        "val": .objectRef.resource
                     }
                 ]
             }

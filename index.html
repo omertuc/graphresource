@@ -1,7 +1,8 @@
 <head><script src="https://unpkg.com/timelines-chart"></script><script src='data.js'></script></head>
 <body><script>const myData = data(); TimelinesChart()(document.body)
     .maxHeight(50000)
-    .rightMargin(500)
+    .maxLineHeight(20)
+    .rightMargin(700)
     .leftMargin(500)
     .topMargin(200)
     .zQualitative(true).data(myData);</script></body>
