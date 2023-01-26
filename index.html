@@ -1,8 +1,19 @@
-<head><script src="https://unpkg.com/timelines-chart"></script><script src='data.js'></script></head>
-<body><script>const myData = data(); TimelinesChart()(document.body)
-    .maxHeight(50000)
-    .maxLineHeight(20)
-    .rightMargin(700)
-    .leftMargin(500)
-    .topMargin(200)
-    .zQualitative(true).data(myData);</script></body>
+<head>
+    <script src="https://unpkg.com/timelines-chart"></script>
+</head>
+<body>
+    <script>
+    fetch('./data.json')
+    .then(response => response.json())
+    .then(data => {
+        TimelinesChart()(document.body)
+            .maxHeight(50000)
+            .maxLineHeight(20)
+            .rightMargin(700)
+            .leftMargin(500)
+            .topMargin(200)
+            .zQualitative(true).data(data);
+    })
+
+    </script>
+</body>
